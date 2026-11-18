@@ -1,6 +1,10 @@
 import { useState } from "react";
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
-import { auth } from "./firebase.js";
+import {
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  GoogleAuthProvider,
+  signInWithPopup,
+} from "firebase/auth";
 
 // 입력 칸 둘이 함께 쓰는 클래스 — 긴 클래스는 변수에 담아 나눠 적습니다
 const inputClass =
@@ -36,6 +40,16 @@ function LoginForm() {
       } else {
         await signInWithEmailAndPassword(auth, email.trim(), password);
       }
+    } catch (error) {
+      setMessage(errorMessages[error.code] ?? error.code);
+    }
+  }
+
+  // Google 계정으로 로그인 — 처음이면 계정이 만들어지고 로그인까지 됩니다
+  async function handleGoogle() {
+    setMessage("");
+    try {
+      await signInWithPopup(auth, new GoogleAuthProvider());
     } catch (error) {
       setMessage(errorMessages[error.code] ?? error.code);
     }
@@ -85,6 +99,14 @@ function LoginForm() {
         className="mt-3 w-full text-sm text-blue-600 hover:underline"
       >
         {isSignup ? "이미 가입했다면 로그인" : "처음이라면 회원가입"}
+      </button>
+
+          <button
+        type="button"
+        onClick={handleGoogle}
+        className="mt-6 w-full rounded-lg border border-slate-300 bg-white py-2.5 font-bold text-slate-700 hover:bg-slate-50"
+      >
+        Google로 계속하기
       </button>
     </form>
   );
